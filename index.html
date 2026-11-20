@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Market Pulse — NSE & BSE Dashboard V2</title>
+<style>
+:root{--bg:#0a1220;--panel:#121e30;--panel2:#18263c;--line:#293a54;--muted:#9aabc2;--text:#edf3ff;--green:#39d6a0;--red:#ff7185;--blue:#7caeff;--amber:#ffd477}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 Inter,Arial,sans-serif}main{max-width:1440px;margin:auto;padding:22px}
+header{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+h1{font-size:25px;margin:0}h2{font-size:16px;margin:0 0 13px}p{margin:4px 0;color:var(--muted)}.sub{font-size:12px;color:var(--muted)}
+.pill{padding:6px 10px;border:1px solid #80682f;background:#392f1a;color:var(--amber);border-radius:20px;font-size:11px;font-weight:700}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.controls{display:flex;gap:7px;flex-wrap:wrap;margin:14px 0}
+button,select,input{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:9px 11px}button{cursor:pointer}button.active{background:#24436c;border-color:var(--blue)}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}.card,.section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px}.metric small{display:block;color:var(--muted);font-size:11px}.metric strong{font-size:23px;display:block;margin:6px 0}.up{color:var(--green)}.down{color:var(--red)}
+.section{margin-top:14px}.section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:1120px}th,td{padding:10px 9px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}th{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}td{font-size:12px}th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--panel)}td:first-child{font-weight:700}
+.bar{height:7px;min-width:74px;background:#2b3b52;border-radius:8px;display:flex;overflow:hidden}.bar i:first-child{background:var(--green)}.bar i:last-child{background:var(--red)}
+.tag{font-size:10px;border-radius:20px;padding:4px 7px;background:#193b32;color:var(--green)}.tag.red{background:#482631;color:var(--red)}.tag.neutral{background:#27364c;color:#c3d1e6}
+.split{display:grid;grid-template-columns:1.4fr 1fr;gap:12px}.list{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mini{background:var(--panel2);border-radius:9px;padding:10px}.mini strong{display:block;margin-top:4px}.foot{font-size:11px;color:var(--muted);margin-top:12px}.status{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:11px}.dot{width:7px;height:7px;background:var(--amber);border-radius:50%}
+@media(max-width:850px){main{padding:13px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.split{grid-template-columns:1fr}}
+@media(max-width:440px){h1{font-size:21px}.metric strong{font-size:20px}.list{grid-template-columns:1fr 1fr}}
+</style></head><body><main>
+<header><div><h1>Market Pulse</h1><p>NSE + BSE · Market Intelligence Dashboard · Draft V2</p></div><div class="row"><span class="pill">DEMO DATA · NOT LIVE</span><span class="sub" id="clock"></span></div></header>
+<div class="controls" id="exchange"><button class="active" data-v="NSE">NSE</button><button data-v="BSE">BSE</button><button data-v="Both">Both exchanges</button>
+<select id="watch"><option>All watchlist stocks</option><option>F&O stocks</option><option>High volume stocks</option><option>Top gainers</option><option>Top losers</option></select>
+<input id="search" placeholder="Search stock / symbol…" aria-label="Search stocks"></div>
+<div class="grid">
+<div class="card metric"><small id="mainIndex">NIFTY 50 · SAMPLE</small><strong id="mainValue">25,850.00</strong><span class="up">▲ +0.65%</span></div>
+<div class="card metric"><small>SENSEX · SAMPLE</small><strong>84,250.00</strong><span class="up">▲ +0.58%</span></div>
+<div class="card metric"><small>India VIX · SAMPLE</small><strong>14.25</strong><span class="down">▼ −1.20%</span></div>
+<div class="card metric"><small>Market breadth · SAMPLE</small><strong>1,245 / 820</strong><span class="up">Advances / Declines</span></div>
+</div>
+<section class="section"><div class="section-head"><h2>Stocks watchlist — price, volume & order book</h2><span class="sub">Illustrative snapshot</span></div>
+<div class="table-wrap"><table><thead><tr><th>Stock</th><th>Symbol</th><th>Exchange</th><th>LTP ₹</th><th>Prev close ₹</th><th>Change ₹</th><th>Change %</th><th>Day high ₹</th><th>Day low ₹</th><th>Volume</th><th>Buy orders*</th><th>Sell orders*</th><th>Buy qty</th><th>Sell qty</th><th>Buy / sell depth</th><th>Delivery %</th></tr></thead>
+<tbody id="stockRows">
+<tr data-stock="Reliance"><td>Reliance</td><td>RELIANCE</td><td>NSE</td><td>1,480.00</td><td>1,461.70</td><td class="up">+18.30</td><td class="up">+1.25%</td><td>1,492.00</td><td>1,455.00</td><td>42.8L</td><td>1,245</td><td>986</td><td>2.4L</td><td>1.8L</td><td><div class="bar"><i style="width:57%"></i><i style="width:43%"></i></div></td><td>48.2%</td></tr>
+<tr data-stock="HDFC Bank"><td>HDFC Bank</td><td>HDFCBANK</td><td>NSE</td><td>980.00</td><td>971.74</td><td class="up">+8.26</td><td class="up">+0.85%</td><td>986.00</td><td>968.00</td><td>31.2L</td><td>1,102</td><td>1,190</td><td>1.7L</td><td>2.0L</td><td><div class="bar"><i style="width:46%"></i><i style="width:54%"></i></div></td><td>52.1%</td></tr>
+<tr data-stock="BEL"><td>BEL</td><td>BEL</td><td>NSE</td><td>425.00</td><td>415.04</td><td class="up">+9.96</td><td class="up">+2.40%</td><td>428.50</td><td>414.00</td><td>68.5L</td><td>1,830</td><td>1,020</td><td>3.6L</td><td>1.9L</td><td><div class="bar"><i style="width:65%"></i><i style="width:35%"></i></div></td><td>39.8%</td></tr>
+<tr data-stock="Infosys"><td>Infosys</td><td>INFY</td><td>NSE</td><td>1,520.00</td><td>1,529.94</td><td class="down">−9.94</td><td class="down">−0.65%</td><td>1,538.00</td><td>1,512.00</td><td>18.4L</td><td>875</td><td>1,140</td><td>1.2L</td><td>1.8L</td><td><div class="bar"><i style="width:40%"></i><i style="width:60%"></i></div></td><td>61.5%</td></tr>
+<tr data-stock="Tata Motors"><td>Tata Motors</td><td>TATAMOTORS</td><td>NSE</td><td>710.00</td><td>717.90</td><td class="down">−7.90</td><td class="down">−1.10%</td><td>722.00</td><td>706.00</td><td>27.6L</td><td>920</td><td>1,260</td><td>1.4L</td><td>2.1L</td><td><div class="bar"><i style="width:40%"></i><i style="width:60%"></i></div></td><td>44.3%</td></tr>
+</tbody></table></div>
+<p class="foot">*Order counts shown here are illustrative. Exchange market depth commonly exposes bid/ask orders and quantities at price levels, not unique buyer/seller identities. Delivery % is generally available as an exchange-published or derived statistic, not necessarily a two-second live field.</p></section>
+<div class="split">
+<section class="section"><h2>F&amp;O contracts watchlist</h2><div class="table-wrap"><table style="min-width:760px"><thead><tr><th>Underlying</th><th>Type</th><th>Expiry</th><th>Strike</th><th>CE/PE</th><th>LTP ₹</th><th>Volume</th><th>Open interest</th><th>OI change</th><th>Signal</th></tr></thead><tbody>
+<tr><td>RELIANCE</td><td>Options</td><td>26 Nov</td><td>1,500</td><td>CE</td><td>24.50</td><td>1.2L</td><td>8.4L</td><td class="up">+8.2%</td><td><span class="tag">Long buildup</span></td></tr>
+<tr><td>HDFCBANK</td><td>Futures</td><td>26 Nov</td><td>—</td><td>—</td><td>982.00</td><td>82K</td><td>5.1L</td><td class="down">−2.1%</td><td><span class="tag neutral">Unwinding</span></td></tr>
+<tr><td>BEL</td><td>Options</td><td>26 Nov</td><td>430</td><td>PE</td><td>8.10</td><td>96K</td><td>3.2L</td><td class="up">+5.4%</td><td><span class="tag red">Short buildup*</span></td></tr>
+</tbody></table></div><p class="foot">Illustrative contracts only. Option signals should be calculated using the underlying price and contract OI/price changes together.</p></section>
+<section class="section"><h2>Market movers & sectors</h2><div class="list">
+<div class="mini"><span class="sub">Top gainer</span><strong class="up">BEL +2.40%</strong></div><div class="mini"><span class="sub">Top loser</span><strong class="down">Tata Motors −1.10%</strong></div>
+<div class="mini"><span class="sub">Strong sector</span><strong class="up">Defence +1.8%</strong></div><div class="mini"><span class="sub">Weak sector</span><strong class="down">IT −0.4%</strong></div>
+<div class="mini"><span class="sub">NSE advances</span><strong>1,245</strong></div><div class="mini"><span class="sub">NSE declines</span><strong>820</strong></div>
+</div></section></div>
+<section class="section"><h2>How to read buyer / seller activity</h2><div class="grid">
+<div class="metric"><small>Buy orders</small><strong class="up">Bid-side orders</strong><span class="sub">Number of visible buy orders in the displayed depth</span></div>
+<div class="metric"><small>Sell orders</small><strong class="down">Ask-side orders</strong><span class="sub">Number of visible sell orders in the displayed depth</span></div>
+<div class="metric"><small>Buy quantity</small><strong>Bid quantity</strong><span class="sub">Shares offered to buy at displayed bid prices</span></div>
+<div class="metric"><small>Sell quantity</small><strong>Ask quantity</strong><span class="sub">Shares offered to sell at displayed ask prices</span></div>
+</div></section>
+<div class="status" style="margin:15px 2px"><span class="dot"></span><span>Preview clock refreshes every 2 seconds · Market feed not connected</span></div>
+<p class="foot">This V2 is a front-end concept with sample values, not a live trading tool. The two-second timer updates the clock only. Live prices, order-book depth, F&amp;O metrics and refresh frequency depend on an authorized market-data provider, feed entitlements, exchange permissions and rate limits. Do not use sample values for trading decisions.</p>
+</main>
+<script>
+const bts=[...document.querySelectorAll('#exchange button')];
+bts.forEach(b=>b.onclick=()=>{bts.forEach(x=>x.classList.toggle('active',x===b));document.getElementById('mainIndex').textContent=(b.dataset.v==='BSE'?'SENSEX':b.dataset.v==='Both'?'NIFTY 50 / SENSEX':'NIFTY 50')+' · SAMPLE';document.getElementById('mainValue').textContent=b.dataset.v==='BSE'?'84,250.00':b.dataset.v==='Both'?'25,850 / 84,250':'25,850.00'});
+document.getElementById('search').addEventListener('input',e=>{const q=e.target.value.toLowerCase();document.querySelectorAll('#stockRows tr').forEach(r=>r.style.display=r.innerText.toLowerCase().includes(q)?'':'none')});
+document.getElementById('watch').addEventListener('change',e=>{const v=e.target.value;document.querySelectorAll('#stockRows tr').forEach(r=>{const change=r.children[6].innerText;const vol=r.children[9].innerText;let show=true;if(v==='Top gainers')show=change.includes('+');if(v==='Top losers')show=change.includes('−');if(v==='High volume stocks')show=vol==='68.5L'||vol==='42.8L';r.style.display=show?'':'none'})});
+function clock(){document.getElementById('clock').textContent=new Date().toLocaleTimeString()}clock();setInterval(clock,2000);
+</script></body></html>
